@@ -8,6 +8,25 @@ All notable changes to this project will be documented in this file.
 - Format: `vMAJOR.MINOR.PATCH`.
 - Use a new version entry for each meaningful change so behavior can be compared across versions.
 
+## [v0.3.16] - 2026-02-20
+
+### Changed
+
+- Updated settings help title from `How to set up these settings` to `How to set up`.
+- Expanded `Companion Host/IP` instructions with clearer same-computer vs network usage guidance and an example LAN IP.
+- Updated on-screen app version label to `v0.3.16`.
+
+## [v0.3.15] - 2026-02-20
+
+### Added
+
+- Added centered `Buy Me A Coffee` button under the settings panel logo.
+- Added bottom-left small on-screen label text: `DeserDog`.
+
+### Changed
+
+- Updated on-screen app version label to `v0.3.15`.
+
 ## [v0.3.14] - 2026-02-20
 
 ### Changed

@@ -42,6 +42,15 @@
         opacity: 0.7;
       }
 
+      .brand-mark {
+        position: absolute;
+        left: 1rem;
+        bottom: 1rem;
+        z-index: 20;
+        font-size: 0.85rem;
+        opacity: 0.7;
+      }
+
       .top-right {
         position: absolute;
         top: 0.8rem;
@@ -290,12 +299,28 @@
         height: auto;
         opacity: 0.95;
       }
+
+      .settings-coffee-wrap {
+        margin-top: 2rem;
+        display: flex;
+        justify-content: center;
+      }
+
+      .settings-coffee-link {
+        display: inline-flex;
+      }
+
+      .settings-coffee-img {
+        height: 42px;
+        width: 152px;
+      }
     </style>
   </head>
   <body>
     <div class="page">
       <div id="currentTime" class="clock">--:--:--</div>
-      <div id="appVersion" class="version">v0.3.13</div>
+      <div class="brand-mark">DeserDog</div>
+      <div id="appVersion" class="version">v0.3.16</div>
 
       <div class="top-right">
         <button id="fullscreenBtn" class="icon-btn" type="button" title="Toggle fullscreen" aria-label="Toggle fullscreen">
@@ -376,14 +401,14 @@
           <button id="saveSettingsBtn" class="settings-btn save-btn" type="button">Save</button>
 
           <details class="how-it-works">
-            <summary>How to set up these settings</summary>
+            <summary>How to set up</summary>
             <ul>
               <li><strong>Companion QLab Connection Label</strong>: set this to your module label in Companion. Find it in Companion under <em>Connections</em> next to the QLab module (for example: <code>qlabfb-local</code>).</li>
+              <li><strong>Companion Host/IP</strong>: set where Companion is running. Keep <code>127.0.0.1</code> when this app runs on the same computer. If Companion runs on another machine, enter that machine's network IP (for example <code>192.168.1.50</code>) and make sure both devices are on the same network.</li>
               <li><strong>Show toggles</strong>: turn cue name, notes, elapsed time, next cue, and clock on/off to control what appears on the main timer view.</li>
               <li><strong>Background / Font color</strong>: pick custom colors for the main page. <code>B/W</code> sets black background + white text. <code>W/B</code> sets white background + black text.</li>
               <li><strong>Save</strong>: click Save to store all changes and immediately apply them.</li>
               <li><strong>QLab module tip</strong>: for smooth timing updates, keep <strong>Use Tenths?</strong> set to <strong>OFF</strong> in the Companion QLab connection settings.</li>
-              <li><strong>Companion Host/IP</strong>: set where Companion is running. Keep <code>127.0.0.1</code> if this page runs on the same computer; use the other computer's IP when running across the network.</li>
             </ul>
           </details>
 
@@ -394,12 +419,18 @@
               alt="Desert Dog logo"
             />
           </div>
+
+          <div class="settings-coffee-wrap">
+            <a class="settings-coffee-link" href="https://www.buymeacoffee.com/desertdog" target="_blank" rel="noopener noreferrer">
+              <img class="settings-coffee-img" src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" />
+            </a>
+          </div>
         </section>
       </aside>
     </div>
 
     <script>
-      const APP_VERSION = "v0.3.13";
+      const APP_VERSION = "v0.3.16";
 
       const SETTINGS_KEYS = {
         backgroundColor: "qlabTimer.backgroundColor",

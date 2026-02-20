@@ -24,11 +24,13 @@ This project is a minimal webpage that displays a Bitfocus Companion variable fo
 	- Inverse colors button (white background, black font)
 	- Companion QLab Connection Label setting (default `qlabfb`)
 	- Visibility toggles for: cue name, notes, elapsed time, next cue, and clock
-	- Collapsible setup instructions at the bottom (below Save), including where to find the QLab label and guidance to keep `Use Tenths?` OFF
+	- Collapsible setup instructions at the bottom (below Save), including where to find the QLab label, Companion Host/IP usage guidance, and guidance to keep `Use Tenths?` OFF
 	- Centered logo below instructions: `https://www.desertdog.nl/images/logo/logo_full_white.png`
+	- Centered Buy Me a Coffee button below the logo: `https://www.buymeacoffee.com/desertdog`
 	- Instructions text should use comfortable spacing/line-height for readability
 	- Settings panel text should stay white regardless of selected page font color
 - Show current app version on screen (bottom-right) for quick benchmark/build identification.
+- Show `DeserDog` in the bottom-left corner of the timer page using small text style (matching version text size).
 - Keep implementation simple (no frontend frameworks/build step for the UI; Electron packaging is allowed).
 - Keep settings integrated in `index.html` (no separate `settings.html`).
 
@@ -51,6 +53,8 @@ This project is a minimal webpage that displays a Bitfocus Companion variable fo
 - Confirmed elapsed-time variable reference is `$(qlabfb-local:e_time)`.
 - Confirmed next-cue variable reference is `$(qlabfb-local:n_name)`.
 - Confirmed internal clock variable reference is `$(internal:time_hms)`.
+- Buy Me a Coffee button target is `https://www.buymeacoffee.com/desertdog` and appears centered below the settings logo.
+- Bottom-left timer page helper label text is `DeserDog`.
 - Documented Companion HTTP route for module variables is `GET /api/variable/<connectionLabel>/<name>/value`.
 - Browser can reach Companion directly (CORS/network/firewall may need adjustment).
 
