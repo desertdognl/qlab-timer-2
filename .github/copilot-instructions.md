@@ -91,6 +91,6 @@ When new user instructions or environment details are provided:
 	- `npm start` (run Electron app locally)
 	- `npm run dist:mac` (build minimized macOS installer artifact: arm64 DMG only)
 	- `npm run dist:mac:release` (build release DMG with required signing/notarization env var checks)
-	- `npm run dist:win` (build Windows installer artifacts; recommended on Windows or CI)
+	- `npm run dist:win` (build Windows installer artifact as Setup EXE via NSIS; recommended on Windows or CI)
 - Signed/notarized mac release steps are documented in `RELEASE-CHECKLIST.md`.  
 - For GitHub publishing, keep source code only; publish installers separately outside git.

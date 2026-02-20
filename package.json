@@ -1,6 +1,6 @@
 {
   "name": "qlab-timer",
-  "version": "0.3.17",
+  "version": "0.3.18",
   "description": "QLab timer display powered by Bitfocus Companion variables",
   "main": "main.js",
   "author": "",
@@ -44,12 +44,6 @@
       "target": [
         {
           "target": "nsis",
-          "arch": [
-            "x64"
-          ]
-        },
-        {
-          "target": "portable",
           "arch": [
             "x64"
           ]

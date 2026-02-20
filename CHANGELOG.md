@@ -8,6 +8,14 @@ All notable changes to this project will be documented in this file.
 - Format: `vMAJOR.MINOR.PATCH`.
 - Use a new version entry for each meaningful change so behavior can be compared across versions.
 
+## [v0.3.18] - 2026-02-20
+
+### Changed
+
+- Updated Windows packaging target to installer-only (`nsis`) and removed `portable` target output.
+- Updated on-screen app version label to `v0.3.18`.
+- Updated package version metadata to `0.3.18`.
+
 ## [v0.3.17] - 2026-02-20
 
 ### Changed
