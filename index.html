@@ -1,0 +1,641 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QLab Time Remaining (Companion Variable)</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+      }
+
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background: #0f172a;
+        color: #e2e8f0;
+        min-height: 100vh;
+      }
+
+      .page {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+      }
+
+      .clock {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        z-index: 20;
+        font-size: clamp(1.1rem, 2.2vw, 2rem);
+        font-weight: 600;
+        line-height: 1;
+      }
+
+      .version {
+        position: absolute;
+        right: 1rem;
+        bottom: 1rem;
+        z-index: 20;
+        font-size: 0.85rem;
+        opacity: 0.7;
+      }
+
+      .top-right {
+        position: absolute;
+        top: 0.8rem;
+        right: 0.9rem;
+        z-index: 50;
+        display: flex;
+        gap: 0.45rem;
+      }
+
+      .icon-btn {
+        width: 2.1rem;
+        height: 2.1rem;
+        border-radius: 0.5rem;
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        background: rgba(15, 23, 42, 0.45);
+        color: inherit;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        text-decoration: none;
+        font-size: 1.1rem;
+        line-height: 1;
+      }
+
+      .icon-btn:hover {
+        background: rgba(30, 41, 59, 0.7);
+      }
+
+      .top-info {
+        position: absolute;
+        top: 3.1rem;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        width: min(92vw, 1200px);
+      }
+
+      .center {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 1rem;
+      }
+
+      .cue-name {
+        margin: 0;
+        font-size: clamp(1.2rem, 3.5vw, 2.8rem);
+        font-weight: 500;
+        line-height: 1.2;
+      }
+
+      .cue-notes {
+        margin: 0.02rem 0 0;
+        font-size: clamp(0.95rem, 1.8vw, 1.35rem);
+        line-height: 1.25;
+        opacity: 0.9;
+      }
+
+      .countdown {
+        margin: 0.08rem 0 0.01rem;
+        font-size: clamp(4rem, 16vw, 11rem);
+        font-weight: 700;
+        line-height: 1;
+      }
+
+      .elapsed {
+        margin: 0;
+        font-size: clamp(1rem, 2.8vw, 2.1rem);
+        font-weight: 500;
+        line-height: 1.2;
+      }
+
+      .next-cue {
+        position: absolute;
+        left: 50%;
+        bottom: 0.85rem;
+        transform: translateX(-50%);
+        font-size: clamp(0.95rem, 1.8vw, 1.35rem);
+        line-height: 1.2;
+        text-align: center;
+        max-width: min(90vw, 1200px);
+        opacity: 0.9;
+      }
+
+      .settings-panel {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: min(50vw, 760px);
+        min-width: 340px;
+        height: 100vh;
+        padding: 1rem;
+        box-sizing: border-box;
+        border-left: 1px solid rgba(148, 163, 184, 0.4);
+        background: rgba(15, 23, 42, 0.95);
+        transform: translateX(100%);
+        transition: transform 220ms ease;
+        z-index: 60;
+        overflow-y: auto;
+        color: #ffffff;
+      }
+
+      .settings-panel.open {
+        transform: translateX(0);
+      }
+
+      .settings-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.9rem;
+      }
+
+      .settings-title {
+        margin: 0;
+        font-size: 1.25rem;
+      }
+
+      .settings-close {
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        background: rgba(30, 41, 59, 0.65);
+        color: inherit;
+        border-radius: 0.45rem;
+        width: 2rem;
+        height: 2rem;
+        cursor: pointer;
+      }
+
+      .settings-card {
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        border-radius: 0.75rem;
+        padding: 0.9rem;
+        background: rgba(15, 23, 42, 0.35);
+      }
+
+      .settings-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 0.8rem;
+        align-items: center;
+        margin: 0.55rem 0;
+      }
+
+      .settings-row input[type="text"] {
+        width: 12.5rem;
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        border-radius: 0.4rem;
+        padding: 0.35rem 0.5rem;
+        background: rgba(30, 41, 59, 0.55);
+        color: inherit;
+      }
+
+      .settings-row input[type="checkbox"] {
+        width: 1.05rem;
+        height: 1.05rem;
+      }
+
+      .settings-row input[type="color"] {
+        width: 3rem;
+        height: 2rem;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+      }
+
+      .color-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.4rem;
+      }
+
+      .settings-btn {
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        border-radius: 0.5rem;
+        padding: 0.42rem 0.7rem;
+        background: rgba(30, 41, 59, 0.6);
+        color: inherit;
+        cursor: pointer;
+      }
+
+      .save-btn {
+        margin-top: 1rem;
+        width: 100%;
+        padding: 0.6rem 0.85rem;
+        font-size: 1rem;
+        font-weight: 700;
+        border-color: #38bdf8;
+        background: #0ea5e9;
+        color: #ffffff;
+      }
+
+      .save-btn:hover {
+        background: #0284c7;
+      }
+
+      .save-btn:focus-visible {
+        outline: 2px solid #7dd3fc;
+        outline-offset: 2px;
+      }
+
+      .how-it-works {
+        margin-top: 1rem;
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        border-radius: 0.75rem;
+        padding: 1rem 1.1rem;
+        background: rgba(15, 23, 42, 0.35);
+        font-size: 0.98rem;
+        line-height: 1.6;
+      }
+
+      .how-it-works summary {
+        cursor: pointer;
+        font-weight: 600;
+        line-height: 1.45;
+      }
+
+      .how-it-works[open] summary {
+        margin-bottom: 0.55rem;
+      }
+
+      .how-it-works ul {
+        margin: 0.1rem 0 0;
+        padding-left: 1.2rem;
+      }
+
+      .how-it-works li {
+        margin-bottom: 0.55rem;
+      }
+
+      .settings-logo-wrap {
+        margin-top: 1rem;
+        display: flex;
+        justify-content: center;
+      }
+
+      .settings-logo {
+        max-width: min(70%, 280px);
+        height: auto;
+        opacity: 0.95;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div id="currentTime" class="clock">--:--:--</div>
+      <div id="appVersion" class="version">v0.3.13</div>
+
+      <div class="top-right">
+        <button id="fullscreenBtn" class="icon-btn" type="button" title="Toggle fullscreen" aria-label="Toggle fullscreen">
+          ⛶
+        </button>
+        <button id="settingsBtn" class="icon-btn" type="button" title="Open settings" aria-label="Open settings">⚙</button>
+      </div>
+
+      <div class="top-info">
+        <div id="cueName" class="cue-name">—</div>
+        <div id="cueNotes" class="cue-notes">—</div>
+      </div>
+
+      <main class="center">
+        <div id="timeRemaining" class="countdown">--:--</div>
+        <div id="elapsedTime" class="elapsed">--:--</div>
+      </main>
+
+      <div id="nextCue" class="next-cue">—</div>
+
+      <aside id="settingsPanel" class="settings-panel" aria-hidden="true">
+        <div class="settings-header">
+          <h2 class="settings-title">Settings</h2>
+          <button id="closeSettingsBtn" class="settings-close" type="button" aria-label="Close settings">✕</button>
+        </div>
+
+        <section class="settings-card">
+          <div class="settings-row">
+            <label for="connectionLabelInput">Companion QLab Connection Label</label>
+            <input id="connectionLabelInput" type="text" value="qlabfb" />
+          </div>
+
+          <div class="settings-row">
+            <label for="companionHostInput">Companion Host/IP</label>
+            <input id="companionHostInput" type="text" value="127.0.0.1" />
+          </div>
+
+          <div class="settings-row">
+            <label for="showCueNameInput">Show current cue name</label>
+            <input id="showCueNameInput" type="checkbox" checked />
+          </div>
+
+          <div class="settings-row">
+            <label for="showNotesInput">Show notes</label>
+            <input id="showNotesInput" type="checkbox" />
+          </div>
+
+          <div class="settings-row">
+            <label for="showElapsedInput">Show elapsed time</label>
+            <input id="showElapsedInput" type="checkbox" />
+          </div>
+
+          <div class="settings-row">
+            <label for="showNextCueInput">Show next cue</label>
+            <input id="showNextCueInput" type="checkbox" />
+          </div>
+
+          <div class="settings-row">
+            <label for="showClockInput">Show clock</label>
+            <input id="showClockInput" type="checkbox" checked />
+          </div>
+
+          <div class="settings-row" style="margin-top: 1rem;">
+            <label for="bgColorInput">Background color</label>
+            <input id="bgColorInput" type="color" value="#000000" />
+          </div>
+
+          <div class="settings-row">
+            <label for="fontColorInput">Font color</label>
+            <input id="fontColorInput" type="color" value="#ffffff" />
+          </div>
+
+          <div class="color-actions">
+            <button id="bwBtn" class="settings-btn" type="button">B/W</button>
+            <button id="wbBtn" class="settings-btn" type="button">W/B</button>
+          </div>
+
+          <button id="saveSettingsBtn" class="settings-btn save-btn" type="button">Save</button>
+
+          <details class="how-it-works">
+            <summary>How to set up these settings</summary>
+            <ul>
+              <li><strong>Companion QLab Connection Label</strong>: set this to your module label in Companion. Find it in Companion under <em>Connections</em> next to the QLab module (for example: <code>qlabfb-local</code>).</li>
+              <li><strong>Show toggles</strong>: turn cue name, notes, elapsed time, next cue, and clock on/off to control what appears on the main timer view.</li>
+              <li><strong>Background / Font color</strong>: pick custom colors for the main page. <code>B/W</code> sets black background + white text. <code>W/B</code> sets white background + black text.</li>
+              <li><strong>Save</strong>: click Save to store all changes and immediately apply them.</li>
+              <li><strong>QLab module tip</strong>: for smooth timing updates, keep <strong>Use Tenths?</strong> set to <strong>OFF</strong> in the Companion QLab connection settings.</li>
+              <li><strong>Companion Host/IP</strong>: set where Companion is running. Keep <code>127.0.0.1</code> if this page runs on the same computer; use the other computer's IP when running across the network.</li>
+            </ul>
+          </details>
+
+          <div class="settings-logo-wrap">
+            <img
+              class="settings-logo"
+              src="https://www.desertdog.nl/images/logo/logo_full_white.png"
+              alt="Desert Dog logo"
+            />
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <script>
+      const APP_VERSION = "v0.3.13";
+
+      const SETTINGS_KEYS = {
+        backgroundColor: "qlabTimer.backgroundColor",
+        fontColor: "qlabTimer.fontColor",
+        companionHost: "qlabTimer.companionHost",
+        connectionLabel: "qlabTimer.connectionLabel",
+        showCueName: "qlabTimer.showCueName",
+        showNotes: "qlabTimer.showNotes",
+        showElapsed: "qlabTimer.showElapsed",
+        showNextCue: "qlabTimer.showNextCue",
+        showClock: "qlabTimer.showClock",
+      };
+
+      const SETTINGS_DEFAULTS = {
+        backgroundColor: "#000000",
+        fontColor: "#ffffff",
+        companionHost: "127.0.0.1",
+        connectionLabel: "qlabfb",
+        showCueName: true,
+        showNotes: false,
+        showElapsed: false,
+        showNextCue: false,
+        showClock: true,
+      };
+
+      const COMPANION_CONFIG = {
+        port: 8000,
+        protocol: "http",
+        pollMs: 1000,
+        variables: {
+          cueName: "r_name",
+          cueNotes: "r_notes",
+          timeRemaining: "r_left",
+          currentTime: "time_hms",
+          elapsedTime: "e_time",
+          nextCueName: "n_name",
+        },
+      };
+
+      const cueNameEl = document.getElementById("cueName");
+      const cueNotesEl = document.getElementById("cueNotes");
+      const topInfoEl = document.querySelector(".top-info");
+      const timeRemainingEl = document.getElementById("timeRemaining");
+      const currentTimeEl = document.getElementById("currentTime");
+      const elapsedTimeEl = document.getElementById("elapsedTime");
+      const nextCueEl = document.getElementById("nextCue");
+      const appVersionEl = document.getElementById("appVersion");
+      const fullscreenBtn = document.getElementById("fullscreenBtn");
+      const settingsBtn = document.getElementById("settingsBtn");
+      const settingsPanelEl = document.getElementById("settingsPanel");
+      const closeSettingsBtn = document.getElementById("closeSettingsBtn");
+
+      const companionHostInput = document.getElementById("companionHostInput");
+      const connectionLabelInput = document.getElementById("connectionLabelInput");
+      const showCueNameInput = document.getElementById("showCueNameInput");
+      const showNotesInput = document.getElementById("showNotesInput");
+      const showElapsedInput = document.getElementById("showElapsedInput");
+      const showNextCueInput = document.getElementById("showNextCueInput");
+      const showClockInput = document.getElementById("showClockInput");
+      const bgColorInput = document.getElementById("bgColorInput");
+      const fontColorInput = document.getElementById("fontColorInput");
+      const bwBtn = document.getElementById("bwBtn");
+      const wbBtn = document.getElementById("wbBtn");
+      const saveSettingsBtn = document.getElementById("saveSettingsBtn");
+
+      const settings = loadSettings();
+
+      function openSettingsPanel() {
+        settingsPanelEl.classList.add("open");
+        settingsPanelEl.setAttribute("aria-hidden", "false");
+      }
+
+      function closeSettingsPanel() {
+        settingsPanelEl.classList.remove("open");
+        settingsPanelEl.setAttribute("aria-hidden", "true");
+      }
+
+      function getStoredBoolean(key, fallback) {
+        const storedValue = localStorage.getItem(key);
+        if (storedValue === null) return fallback;
+        return storedValue === "true";
+      }
+
+      function loadSettings() {
+        return {
+          backgroundColor: localStorage.getItem(SETTINGS_KEYS.backgroundColor) || SETTINGS_DEFAULTS.backgroundColor,
+          fontColor: localStorage.getItem(SETTINGS_KEYS.fontColor) || SETTINGS_DEFAULTS.fontColor,
+          companionHost: localStorage.getItem(SETTINGS_KEYS.companionHost) || SETTINGS_DEFAULTS.companionHost,
+          connectionLabel: localStorage.getItem(SETTINGS_KEYS.connectionLabel) || SETTINGS_DEFAULTS.connectionLabel,
+          showCueName: getStoredBoolean(SETTINGS_KEYS.showCueName, SETTINGS_DEFAULTS.showCueName),
+          showNotes: getStoredBoolean(SETTINGS_KEYS.showNotes, SETTINGS_DEFAULTS.showNotes),
+          showElapsed: getStoredBoolean(SETTINGS_KEYS.showElapsed, SETTINGS_DEFAULTS.showElapsed),
+          showNextCue: getStoredBoolean(SETTINGS_KEYS.showNextCue, SETTINGS_DEFAULTS.showNextCue),
+          showClock: getStoredBoolean(SETTINGS_KEYS.showClock, SETTINGS_DEFAULTS.showClock),
+        };
+      }
+
+      function applySavedTheme(pageSettings) {
+        document.body.style.backgroundColor = pageSettings.backgroundColor;
+        document.body.style.color = pageSettings.fontColor;
+      }
+
+      function applyVisibility(pageSettings) {
+        currentTimeEl.style.display = pageSettings.showClock ? "block" : "none";
+        cueNameEl.style.display = pageSettings.showCueName ? "block" : "none";
+        cueNotesEl.style.display = pageSettings.showNotes ? "block" : "none";
+        elapsedTimeEl.style.display = pageSettings.showElapsed ? "block" : "none";
+        nextCueEl.style.display = pageSettings.showNextCue ? "block" : "none";
+        topInfoEl.style.display = pageSettings.showCueName || pageSettings.showNotes ? "flex" : "none";
+      }
+
+      function fillSettingsForm(pageSettings) {
+        companionHostInput.value = pageSettings.companionHost;
+        connectionLabelInput.value = pageSettings.connectionLabel;
+        showCueNameInput.checked = pageSettings.showCueName;
+        showNotesInput.checked = pageSettings.showNotes;
+        showElapsedInput.checked = pageSettings.showElapsed;
+        showNextCueInput.checked = pageSettings.showNextCue;
+        showClockInput.checked = pageSettings.showClock;
+        bgColorInput.value = pageSettings.backgroundColor;
+        fontColorInput.value = pageSettings.fontColor;
+      }
+
+      function saveSettingsFromForm() {
+        settings.companionHost = companionHostInput.value.trim() || SETTINGS_DEFAULTS.companionHost;
+        settings.connectionLabel = connectionLabelInput.value.trim() || SETTINGS_DEFAULTS.connectionLabel;
+        settings.showCueName = showCueNameInput.checked;
+        settings.showNotes = showNotesInput.checked;
+        settings.showElapsed = showElapsedInput.checked;
+        settings.showNextCue = showNextCueInput.checked;
+        settings.showClock = showClockInput.checked;
+        settings.backgroundColor = bgColorInput.value;
+        settings.fontColor = fontColorInput.value;
+
+        localStorage.setItem(SETTINGS_KEYS.companionHost, settings.companionHost);
+        localStorage.setItem(SETTINGS_KEYS.connectionLabel, settings.connectionLabel);
+        localStorage.setItem(SETTINGS_KEYS.showCueName, String(settings.showCueName));
+        localStorage.setItem(SETTINGS_KEYS.showNotes, String(settings.showNotes));
+        localStorage.setItem(SETTINGS_KEYS.showElapsed, String(settings.showElapsed));
+        localStorage.setItem(SETTINGS_KEYS.showNextCue, String(settings.showNextCue));
+        localStorage.setItem(SETTINGS_KEYS.showClock, String(settings.showClock));
+        localStorage.setItem(SETTINGS_KEYS.backgroundColor, settings.backgroundColor);
+        localStorage.setItem(SETTINGS_KEYS.fontColor, settings.fontColor);
+
+        applySavedTheme(settings);
+        applyVisibility(settings);
+      }
+
+      async function toggleFullscreen() {
+        try {
+          if (!document.fullscreenElement) {
+            await document.documentElement.requestFullscreen();
+          } else {
+            await document.exitFullscreen();
+          }
+        } catch (_error) {
+        }
+      }
+
+      function buildModuleVariableUrl(connectionLabel, variableName) {
+        const baseUrl = `${COMPANION_CONFIG.protocol}://${settings.companionHost}:${COMPANION_CONFIG.port}`;
+        const label = encodeURIComponent(connectionLabel);
+        const variable = encodeURIComponent(variableName);
+        return `${baseUrl}/api/variable/${label}/${variable}/value`;
+      }
+
+      async function fetchVariableValue(connectionLabel, variableName) {
+        const url = buildModuleVariableUrl(connectionLabel, variableName);
+        const response = await fetch(url, { cache: "no-store" });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status} on ${url}`);
+        }
+
+        return (await response.text()).trim();
+      }
+
+      async function tick() {
+        try {
+          const [timeRemaining, cueName, cueNotes, currentTime, elapsedTime, nextCueName] = await Promise.all([
+            fetchVariableValue(settings.connectionLabel, COMPANION_CONFIG.variables.timeRemaining),
+            settings.showCueName
+              ? fetchVariableValue(settings.connectionLabel, COMPANION_CONFIG.variables.cueName)
+              : Promise.resolve(""),
+            settings.showNotes
+              ? fetchVariableValue(settings.connectionLabel, COMPANION_CONFIG.variables.cueNotes)
+              : Promise.resolve(""),
+            settings.showClock
+              ? fetchVariableValue("internal", COMPANION_CONFIG.variables.currentTime)
+              : Promise.resolve(""),
+            settings.showElapsed
+              ? fetchVariableValue(settings.connectionLabel, COMPANION_CONFIG.variables.elapsedTime)
+              : Promise.resolve(""),
+            settings.showNextCue
+              ? fetchVariableValue(settings.connectionLabel, COMPANION_CONFIG.variables.nextCueName)
+              : Promise.resolve(""),
+          ]);
+
+          timeRemainingEl.textContent = timeRemaining || "--:--";
+
+          if (settings.showCueName) cueNameEl.textContent = cueName || "—";
+          if (settings.showNotes) cueNotesEl.textContent = cueNotes || "—";
+          if (settings.showClock) currentTimeEl.textContent = currentTime || "--:--:--";
+          if (settings.showElapsed) elapsedTimeEl.textContent = elapsedTime || "--:--";
+          if (settings.showNextCue) nextCueEl.textContent = `Next: ${nextCueName || "—"}`;
+        } catch (_error) {
+          timeRemainingEl.textContent = "--:--";
+
+          if (settings.showCueName) cueNameEl.textContent = "Connection error";
+          if (settings.showNotes) cueNotesEl.textContent = "—";
+          if (settings.showClock) currentTimeEl.textContent = "--:--:--";
+          if (settings.showElapsed) elapsedTimeEl.textContent = "--:--";
+          if (settings.showNextCue) nextCueEl.textContent = "Next: —";
+        }
+      }
+
+      fullscreenBtn.addEventListener("click", toggleFullscreen);
+      settingsBtn.addEventListener("click", openSettingsPanel);
+      closeSettingsBtn.addEventListener("click", closeSettingsPanel);
+      bwBtn.addEventListener("click", () => {
+        bgColorInput.value = "#000000";
+        fontColorInput.value = "#ffffff";
+      });
+      wbBtn.addEventListener("click", () => {
+        bgColorInput.value = "#ffffff";
+        fontColorInput.value = "#000000";
+      });
+      saveSettingsBtn.addEventListener("click", saveSettingsFromForm);
+
+      appVersionEl.textContent = APP_VERSION;
+      applySavedTheme(settings);
+      applyVisibility(settings);
+      fillSettingsForm(settings);
+
+      tick();
+      setInterval(tick, COMPANION_CONFIG.pollMs);
+    </script>
+  </body>
+</html>
