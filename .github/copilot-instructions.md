@@ -57,6 +57,8 @@ This project is a minimal webpage that displays a Bitfocus Companion variable fo
 - Bottom-left timer page helper label text is `DeserDog`.
 - Documented Companion HTTP route for module variables is `GET /api/variable/<connectionLabel>/<name>/value`.
 - Browser can reach Companion directly (CORS/network/firewall may need adjustment).
+- Unsigned macOS DMG builds can trigger Gatekeeper "app is damaged" behavior when distributed/downloaded.
+- Release DMGs should be produced with signing/notarization environment variables set.
 
 ## Known Behavior / Benchmarks
 
@@ -88,6 +90,7 @@ When new user instructions or environment details are provided:
 - Desktop app packaging commands:
 	- `npm start` (run Electron app locally)
 	- `npm run dist:mac` (build minimized macOS installer artifact: arm64 DMG only)
+	- `npm run dist:mac:release` (build release DMG with required signing/notarization env var checks)
 	- `npm run dist:win` (build Windows installer artifacts; recommended on Windows or CI)
 - Signed/notarized mac release steps are documented in `RELEASE-CHECKLIST.md`.  
 - For GitHub publishing, keep source code only; publish installers separately outside git.

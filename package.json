@@ -1,6 +1,6 @@
 {
   "name": "qlab-timer",
-  "version": "0.3.13",
+  "version": "0.3.17",
   "description": "QLab timer display powered by Bitfocus Companion variables",
   "main": "main.js",
   "author": "",
@@ -10,11 +10,12 @@
     "start": "electron .",
     "dist": "electron-builder",
     "dist:mac": "electron-builder --mac dmg --arm64",
+    "dist:mac:release": "node -e \"const required=['APPLE_ID','APPLE_APP_SPECIFIC_PASSWORD','APPLE_TEAM_ID','CSC_NAME']; const missing=required.filter((key)=>!process.env[key]); if(missing.length){console.error('Missing release env vars: ' + missing.join(', ')); process.exit(1);}\" && electron-builder --mac dmg --arm64",
     "dist:win": "electron-builder --win"
   },
   "devDependencies": {
-    "electron": "^34.3.0",
-    "electron-builder": "^25.1.8"
+    "electron": "34.3.0",
+    "electron-builder": "25.1.8"
   },
   "build": {
     "compression": "maximum",

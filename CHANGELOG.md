@@ -8,6 +8,15 @@ All notable changes to this project will be documented in this file.
 - Format: `vMAJOR.MINOR.PATCH`.
 - Use a new version entry for each meaningful change so behavior can be compared across versions.
 
+## [v0.3.17] - 2026-02-20
+
+### Changed
+
+- Added `npm run dist:mac:release` to enforce required Apple signing/notarization environment variables before building a release DMG.
+- Pinned Electron toolchain versions in `package.json` (`electron` and `electron-builder`) for reproducible packaging behavior.
+- Updated on-screen app version label to `v0.3.17`.
+- Updated package version metadata to `0.3.17`.
+
 ## [v0.3.16] - 2026-02-20
 
 ### Changed
@@ -15,6 +24,7 @@ All notable changes to this project will be documented in this file.
 - Updated settings help title from `How to set up these settings` to `How to set up`.
 - Expanded `Companion Host/IP` instructions with clearer same-computer vs network usage guidance and an example LAN IP.
 - Updated on-screen app version label to `v0.3.16`.
+- Updated package version metadata to `0.3.16`.
 
 ## [v0.3.15] - 2026-02-20
 
