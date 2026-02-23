@@ -8,6 +8,41 @@ All notable changes to this project will be documented in this file.
 - Format: `vMAJOR.MINOR.PATCH`.
 - Use a new version entry for each meaningful change so behavior can be compared across versions.
 
+## [v0.3.20] - 2026-02-23
+
+### Added
+
+- Added startup app-version check:
+	- Shows `updated version available` next to bottom-right version when a newer version exists and links to repository.
+
+### Changed
+
+- Updated on-screen app version label to `v0.3.20`.
+- Updated package version metadata to `0.3.20`.
+- Expanded local build documentation with explicit smallest installer-only commands and output artifact names for macOS and Windows.
+- Added reusable `npm run clean:dist:final` script to keep only current-version installer artifacts in `dist/`.
+
+### Fixed
+
+- Added a red `!` marker next to the bottom-right version label when the version-check sheet cannot be reached or parsed (e.g. offline/no internet).
+
+## [v0.3.19] - 2026-02-23
+
+### Added
+
+- Added custom app icon assets for desktop packaging:
+	- `build/icons/icon.icns` (macOS)
+	- `build/icons/icon.ico` (Windows)
+	- `build/icons/icon.png` and source `build/icons/icon-1024.png`
+	- `build/icons/generate_icons.py` to regenerate icon assets
+
+### Changed
+
+- Updated Electron Builder config to use custom icons instead of generic defaults for both macOS and Windows targets.
+- Updated app version label to `v0.3.19`.
+- Updated package version metadata to `0.3.19`.
+- Updated `.gitignore` to ignore both `.github/` and `.guthub/` directories during git sync.
+
 ## [v0.3.18] - 2026-02-20
 
 ### Changed

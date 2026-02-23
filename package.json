@@ -1,6 +1,6 @@
 {
   "name": "qlab-timer",
-  "version": "0.3.18",
+  "version": "0.3.20",
   "description": "QLab timer display powered by Bitfocus Companion variables",
   "main": "main.js",
   "author": "",
@@ -11,7 +11,8 @@
     "dist": "electron-builder",
     "dist:mac": "electron-builder --mac dmg --arm64",
     "dist:mac:release": "node -e \"const required=['APPLE_ID','APPLE_APP_SPECIFIC_PASSWORD','APPLE_TEAM_ID','CSC_NAME']; const missing=required.filter((key)=>!process.env[key]); if(missing.length){console.error('Missing release env vars: ' + missing.join(', ')); process.exit(1);}\" && electron-builder --mac dmg --arm64",
-    "dist:win": "electron-builder --win"
+    "dist:win": "electron-builder --win",
+    "clean:dist:final": "node -e \"const fs=require('fs');const path=require('path');const version=require('./package.json').version;const keep=new Set(['QLab Timer-'+version+'-arm64.dmg','QLab Timer Setup '+version+'.exe']);const dist='dist';if(!fs.existsSync(dist)){process.exit(0);}for(const entry of fs.readdirSync(dist)){if(!keep.has(entry)){fs.rmSync(path.join(dist,entry),{recursive:true,force:true});}}\""
   },
   "devDependencies": {
     "electron": "34.3.0",
@@ -21,6 +22,7 @@
     "compression": "maximum",
     "appId": "nl.desertdog.qlabtimer",
     "productName": "QLab Timer",
+    "icon": "build/icons/icon.png",
     "files": [
       "index.html",
       "main.js",
@@ -30,6 +32,7 @@
       "output": "dist"
     },
     "mac": {
+      "icon": "build/icons/icon.icns",
       "target": [
         {
           "target": "dmg",
@@ -41,6 +44,7 @@
       "category": "public.app-category.utilities"
     },
     "win": {
+      "icon": "build/icons/icon.ico",
       "target": [
         {
           "target": "nsis",

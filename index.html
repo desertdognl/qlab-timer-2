@@ -42,6 +42,20 @@
         opacity: 0.7;
       }
 
+      .version a {
+        color: inherit;
+      }
+
+      .version-update {
+        margin-left: 0.45rem;
+      }
+
+      .version-error {
+        margin-left: 0.35rem;
+        color: #ef4444;
+        font-weight: 700;
+      }
+
       .brand-mark {
         position: absolute;
         left: 1rem;
@@ -320,7 +334,7 @@
     <div class="page">
       <div id="currentTime" class="clock">--:--:--</div>
       <div class="brand-mark">DeserDog</div>
-      <div id="appVersion" class="version">v0.3.18</div>
+      <div id="appVersion" class="version">v0.3.20</div>
 
       <div class="top-right">
         <button id="fullscreenBtn" class="icon-btn" type="button" title="Toggle fullscreen" aria-label="Toggle fullscreen">
@@ -430,7 +444,12 @@
     </div>
 
     <script>
-      const APP_VERSION = "v0.3.18";
+      const APP_VERSION = "v0.3.20";
+      const VERSION_CHECK_CONFIG = {
+        sheetGvizUrl:
+          "https://docs.google.com/spreadsheets/d/1sAWjSpoLeFVKM9SK5ZqAko6T9nR9Vu2ZtmOLm4f_k0w/gviz/tq?tqx=out:json",
+        appName: "QLab Timer",
+      };
 
       const SETTINGS_KEYS = {
         backgroundColor: "qlabTimer.backgroundColor",
@@ -597,6 +616,99 @@
         return `${baseUrl}/api/variable/${label}/${variable}/value`;
       }
 
+      function getVersionParts(versionValue) {
+        return String(versionValue || "")
+          .trim()
+          .replace(/^v/i, "")
+          .split(".")
+          .map((part) => Number.parseInt(part, 10))
+          .map((part) => (Number.isFinite(part) ? part : 0));
+      }
+
+      function isVersionHigher(candidateVersion, currentVersion) {
+        const candidateParts = getVersionParts(candidateVersion);
+        const currentParts = getVersionParts(currentVersion);
+        const maxLength = Math.max(candidateParts.length, currentParts.length);
+
+        for (let index = 0; index < maxLength; index += 1) {
+          const candidatePart = candidateParts[index] ?? 0;
+          const currentPart = currentParts[index] ?? 0;
+
+          if (candidatePart > currentPart) return true;
+          if (candidatePart < currentPart) return false;
+        }
+
+        return false;
+      }
+
+      function setVersionIndicatorMarkup(html) {
+        appVersionEl.innerHTML = `${APP_VERSION}${html}`;
+      }
+
+      function showUpdateAvailable(updateUrl) {
+        if (!updateUrl) return;
+        const safeUrl = String(updateUrl).trim();
+        if (!safeUrl) return;
+
+        setVersionIndicatorMarkup(
+          ` <a class="version-update" href="${safeUrl}" target="_blank" rel="noopener noreferrer">updated version available</a>`
+        );
+      }
+
+      function showVersionCheckErrorMarker() {
+        setVersionIndicatorMarkup(` <span class="version-error" title="Version check failed">!</span>`);
+      }
+
+      function parseGoogleGvizResponse(responseText) {
+        const prefix = "google.visualization.Query.setResponse(";
+        const suffix = ");";
+        const startIndex = responseText.indexOf(prefix);
+        const endIndex = responseText.lastIndexOf(suffix);
+
+        if (startIndex === -1 || endIndex === -1 || endIndex <= startIndex) {
+          throw new Error("Unexpected Google Sheets response format");
+        }
+
+        const jsonPayload = responseText.slice(startIndex + prefix.length, endIndex);
+        return JSON.parse(jsonPayload);
+      }
+
+      function getCellValue(row, columnIndex) {
+        const cell = row?.c?.[columnIndex];
+        if (!cell) return "";
+        if (cell.f !== undefined && cell.f !== null && String(cell.f).trim()) return String(cell.f).trim();
+        if (cell.v !== undefined && cell.v !== null) return String(cell.v).trim();
+        return "";
+      }
+
+      async function checkForUpdatedVersion() {
+        try {
+          const response = await fetch(VERSION_CHECK_CONFIG.sheetGvizUrl, { cache: "no-store" });
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+          }
+
+          const responseText = await response.text();
+          const data = parseGoogleGvizResponse(responseText);
+          const rows = Array.isArray(data?.table?.rows) ? data.table.rows : [];
+
+          const match = rows.find((row) => {
+            const appName = getCellValue(row, 0);
+            return appName === VERSION_CHECK_CONFIG.appName;
+          });
+
+          if (!match) return;
+
+          const publishedVersion = getCellValue(match, 1);
+          const updateUrl = getCellValue(match, 2);
+          if (isVersionHigher(publishedVersion, APP_VERSION)) {
+            showUpdateAvailable(updateUrl);
+          }
+        } catch (_error) {
+          showVersionCheckErrorMarker();
+        }
+      }
+
       async function fetchVariableValue(connectionLabel, variableName) {
         const url = buildModuleVariableUrl(connectionLabel, variableName);
         const response = await fetch(url, { cache: "no-store" });
@@ -660,10 +772,12 @@
       });
       saveSettingsBtn.addEventListener("click", saveSettingsFromForm);
 
-      appVersionEl.textContent = APP_VERSION;
+      setVersionIndicatorMarkup("");
       applySavedTheme(settings);
       applyVisibility(settings);
       fillSettingsForm(settings);
+
+      checkForUpdatedVersion();
 
       tick();
       setInterval(tick, COMPANION_CONFIG.pollMs);

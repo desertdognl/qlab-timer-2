@@ -1,9 +1,9 @@
 node_modules/
 .DS_Store
 
-# Always keep project instructions
-!.github/
-!.github/copilot-instructions.md
+# Keep local Copilot metadata out of git sync
+.github/
+.guthub/
 
 # Never publish build artifacts in git
 dist/
