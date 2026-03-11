@@ -1,6 +1,6 @@
 {
   "name": "qlab-timer",
-  "version": "0.3.20",
+  "version": "0.3.23",
   "description": "QLab timer display powered by Bitfocus Companion variables",
   "main": "main.js",
   "author": "",
@@ -11,8 +11,8 @@
     "dist": "electron-builder",
     "dist:mac": "electron-builder --mac dmg --arm64",
     "dist:mac:release": "node -e \"const required=['APPLE_ID','APPLE_APP_SPECIFIC_PASSWORD','APPLE_TEAM_ID','CSC_NAME']; const missing=required.filter((key)=>!process.env[key]); if(missing.length){console.error('Missing release env vars: ' + missing.join(', ')); process.exit(1);}\" && electron-builder --mac dmg --arm64",
-    "dist:win": "electron-builder --win",
-    "clean:dist:final": "node -e \"const fs=require('fs');const path=require('path');const version=require('./package.json').version;const keep=new Set(['QLab Timer-'+version+'-arm64.dmg','QLab Timer Setup '+version+'.exe']);const dist='dist';if(!fs.existsSync(dist)){process.exit(0);}for(const entry of fs.readdirSync(dist)){if(!keep.has(entry)){fs.rmSync(path.join(dist,entry),{recursive:true,force:true});}}\""
+    "dist:win": "electron-builder --win && cp 'build/README-INSTALL-WINDOWS.txt' 'dist/README-INSTALL-WINDOWS.txt' && cd dist && zip -j -q -FS \"QLab Timer Setup $npm_package_version.zip\" \"QLab Timer Setup $npm_package_version.exe\" README-INSTALL-WINDOWS.txt",
+    "clean:dist:final": "node -e \"const fs=require('fs');const path=require('path');const version=require('./package.json').version;const keep=new Set(['QLab Timer-'+version+'-arm64.dmg','QLab Timer Setup '+version+'.zip']);const dist='dist';if(!fs.existsSync(dist)){process.exit(0);}for(const entry of fs.readdirSync(dist)){if(!keep.has(entry)){fs.rmSync(path.join(dist,entry),{recursive:true,force:true});}}\""
   },
   "devDependencies": {
     "electron": "34.3.0",
@@ -42,6 +42,27 @@
         }
       ],
       "category": "public.app-category.utilities"
+    },
+    "dmg": {
+      "contents": [
+        {
+          "x": 140,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        },
+        {
+          "x": 270,
+          "y": 390,
+          "type": "file",
+          "path": "build/README-INSTALL-MAC.txt",
+          "name": "README-INSTALL-MAC.txt"
+        }
+      ]
     },
     "win": {
       "icon": "build/icons/icon.ico",
