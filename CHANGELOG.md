@@ -8,6 +8,42 @@ All notable changes to this project will be documented in this file.
 - Format: `vMAJOR.MINOR.PATCH`.
 - Use a new version entry for each meaningful change so behavior can be compared across versions.
 
+## [v0.3.23] - 2026-03-11
+
+### Changed
+
+- Updated Windows distribution workflow to produce `dist/QLab Timer Setup <version>.zip` containing both:
+	- `QLab Timer Setup <version>.exe`
+	- `README-INSTALL-WINDOWS.txt`
+- Updated `clean:dist:final` to keep the final Windows ZIP artifact instead of the standalone EXE.
+- Updated on-screen app version label to `v0.3.23`.
+- Updated package version metadata to `0.3.23`.
+
+## [v0.3.22] - 2026-03-11
+
+### Added
+
+- Added Windows install guidance file: `build/README-INSTALL-WINDOWS.txt`.
+
+### Changed
+
+- Updated `dist:win` build script to copy `README-INSTALL-WINDOWS.txt` to `dist/` next to the generated Setup EXE.
+- Updated on-screen app version label to `v0.3.22`.
+- Updated package version metadata to `0.3.22`.
+
+## [v0.3.21] - 2026-03-11
+
+### Added
+
+- Added bundled `README-INSTALL-MAC.txt` into the macOS DMG with practical install guidance for Gatekeeper-blocked unsigned installs.
+
+### Changed
+
+- Updated Electron DMG layout to include the install README alongside the app and Applications shortcut.
+- Rebuilt desktop packaging setup to use the newly replaced icon assets from `build/icons/` for current installers.
+- Updated on-screen app version label to `v0.3.21`.
+- Updated package version metadata to `0.3.21`.
+
 ## [v0.3.20] - 2026-02-23
 
 ### Added
