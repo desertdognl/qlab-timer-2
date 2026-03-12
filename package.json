@@ -1,6 +1,6 @@
 {
   "name": "qlab-timer",
-  "version": "0.3.25",
+  "version": "0.3.26",
   "description": "QLab timer display powered by Bitfocus Companion variables",
   "main": "main.js",
   "author": "",

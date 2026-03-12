@@ -8,6 +8,17 @@ All notable changes to this project will be documented in this file.
 - Format: `vMAJOR.MINOR.PATCH`.
 - Use a new version entry for each meaningful change so behavior can be compared across versions.
 
+## [v0.3.26] - 2026-03-12
+
+### Fixed
+
+- Corrected bottom-left helper label text from `DeserDog` to `DesertDog`.
+
+### Changed
+
+- Updated on-screen app version label to `v0.3.26`.
+- Updated package version metadata to `0.3.26`.
+
 ## [v0.3.25] - 2026-03-12
 
 ### Changed
