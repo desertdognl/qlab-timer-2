@@ -8,6 +8,22 @@ All notable changes to this project will be documented in this file.
 - Format: `vMAJOR.MINOR.PATCH`.
 - Use a new version entry for each meaningful change so behavior can be compared across versions.
 
+## [v0.3.25] - 2026-03-12
+
+### Changed
+
+- Updated default build flow so `npm run dist` always generates all three installer targets in one run:
+	- macOS Apple Silicon DMG
+	- macOS Intel DMG
+	- Windows setup ZIP (including installer EXE + install README)
+- Updated artifact naming so platform/architecture is explicit for user downloads:
+	- `QLab Timer-macOS-Apple-Silicon-<version>.dmg`
+	- `QLab Timer-macOS-Intel-<version>.dmg`
+	- `QLab Timer-Windows-Setup-<version>.zip`
+- Updated `clean:dist:final` to keep only the above three final installer files.
+- Updated on-screen app version label to `v0.3.25`.
+- Updated package version metadata to `0.3.25`.
+
 ## [v0.3.23] - 2026-03-11
 
 ### Changed

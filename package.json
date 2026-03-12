@@ -1,6 +1,6 @@
 {
   "name": "qlab-timer",
-  "version": "0.3.23",
+  "version": "0.3.25",
   "description": "QLab timer display powered by Bitfocus Companion variables",
   "main": "main.js",
   "author": "",
@@ -8,11 +8,14 @@
   "private": true,
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder",
-    "dist:mac": "electron-builder --mac dmg --arm64",
+    "dist": "npm run dist:all",
+    "dist:all": "rm -rf dist && npm run dist:mac:silicon && npm run dist:mac:intel && npm run dist:win && npm run clean:dist:final",
+    "dist:mac": "npm run dist:mac:silicon",
+    "dist:mac:silicon": "electron-builder --mac dmg --arm64 && node -e \"const fs=require('fs');const path=require('path');const v=require('./package.json').version;const dist='dist';const src=path.join(dist,'QLab Timer-'+v+'-arm64.dmg');const dst=path.join(dist,'QLab Timer-macOS-Apple-Silicon-'+v+'.dmg');if(fs.existsSync(src)){if(fs.existsSync(dst))fs.rmSync(dst,{force:true});fs.renameSync(src,dst);}const blockmap=src+'.blockmap';if(fs.existsSync(blockmap))fs.rmSync(blockmap,{force:true});\"",
+    "dist:mac:intel": "electron-builder --mac dmg --x64 && node -e \"const fs=require('fs');const path=require('path');const v=require('./package.json').version;const dist='dist';const src=path.join(dist,'QLab Timer-'+v+'.dmg');const dst=path.join(dist,'QLab Timer-macOS-Intel-'+v+'.dmg');if(fs.existsSync(src)){if(fs.existsSync(dst))fs.rmSync(dst,{force:true});fs.renameSync(src,dst);}const blockmap=src+'.blockmap';if(fs.existsSync(blockmap))fs.rmSync(blockmap,{force:true});\"",
     "dist:mac:release": "node -e \"const required=['APPLE_ID','APPLE_APP_SPECIFIC_PASSWORD','APPLE_TEAM_ID','CSC_NAME']; const missing=required.filter((key)=>!process.env[key]); if(missing.length){console.error('Missing release env vars: ' + missing.join(', ')); process.exit(1);}\" && electron-builder --mac dmg --arm64",
-    "dist:win": "electron-builder --win && cp 'build/README-INSTALL-WINDOWS.txt' 'dist/README-INSTALL-WINDOWS.txt' && cd dist && zip -j -q -FS \"QLab Timer Setup $npm_package_version.zip\" \"QLab Timer Setup $npm_package_version.exe\" README-INSTALL-WINDOWS.txt",
-    "clean:dist:final": "node -e \"const fs=require('fs');const path=require('path');const version=require('./package.json').version;const keep=new Set(['QLab Timer-'+version+'-arm64.dmg','QLab Timer Setup '+version+'.zip']);const dist='dist';if(!fs.existsSync(dist)){process.exit(0);}for(const entry of fs.readdirSync(dist)){if(!keep.has(entry)){fs.rmSync(path.join(dist,entry),{recursive:true,force:true});}}\""
+    "dist:win": "electron-builder --win && cp 'build/README-INSTALL-WINDOWS.txt' 'dist/README-INSTALL-WINDOWS.txt' && cd dist && zip -j -q -FS \"QLab Timer-Windows-Setup-$npm_package_version.zip\" \"QLab Timer Setup $npm_package_version.exe\" README-INSTALL-WINDOWS.txt",
+    "clean:dist:final": "node -e \"const fs=require('fs');const path=require('path');const version=require('./package.json').version;const keep=new Set(['QLab Timer-macOS-Apple-Silicon-'+version+'.dmg','QLab Timer-macOS-Intel-'+version+'.dmg','QLab Timer-Windows-Setup-'+version+'.zip']);const dist='dist';if(!fs.existsSync(dist)){process.exit(0);}for(const entry of fs.readdirSync(dist)){if(!keep.has(entry)){fs.rmSync(path.join(dist,entry),{recursive:true,force:true});}}\""
   },
   "devDependencies": {
     "electron": "34.3.0",
